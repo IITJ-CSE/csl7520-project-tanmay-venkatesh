@@ -78,6 +78,6 @@ int main()
     cout<<"\n";
     auto stop = high_resolution_clock::now();
     auto duration = duration_cast<microseconds>(stop - start);
-    ofstream out("../cpu_perf.txt");
-    out<<duration.count()/1000.0<<nl;
+    ofstream ot("../cpu_perf.txt");
+    ot<<duration.count()/1000.0<<nl;
 }
