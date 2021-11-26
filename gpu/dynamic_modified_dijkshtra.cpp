@@ -8,6 +8,7 @@ typedef struct edge{
  
 const int blockSize = 256;
 int numBlocks;
+float exec_time = 0;
  
 bool edgeComparator(edge &e1, edge &e2){
     if(e1.u==e2.u)return e1.v<e2.v;
@@ -65,15 +66,37 @@ void relax(int n, int *v, int *wt, int *ea, int *ew, bool *mask, int *thrd){
 }
  
 void dijkstra(int n, int *v, int *wt, int *ea, int *ew, bool *mask, int *thrd){
+    cudaEvent_t start, stop;
+    cudaEventCreate(&start);
+    cudaEventCreate(&stop);
+    cudaEventRecord(start);
     initialise<<<numBlocks, blockSize>>>(n, wt, mask);
-    cudaDeviceSynchronize();
+    cudaEventRecord(stop);
+    cudaEventSynchronize(stop);
+    float tmp = 0;
+    cudaEventElapsedTime(&tmp, start, stop);
+    exec_time+=tmp;
     *thrd = 0;
     while(*thrd<1000000000){
         *thrd=1000000000;
+        cudaEventCreate(&start);
+        cudaEventCreate(&stop);
+        cudaEventRecord(start);
         threshold<<<numBlocks, blockSize>>>(n, v, wt, ea, ew, mask, thrd);
-        cudaDeviceSynchronize();
+        cudaEventRecord(stop);
+        cudaEventSynchronize(stop);
+        tmp = 0;
+        cudaEventElapsedTime(&tmp, start, stop);
+        exec_time+=tmp;
+        cudaEventCreate(&start);
+        cudaEventCreate(&stop);
+        cudaEventRecord(start);
         relax<<<numBlocks, blockSize>>>(n, v, wt, ea, ew, mask, thrd);
-        cudaDeviceSynchronize();
+        cudaEventRecord(stop);
+        cudaEventSynchronize(stop);
+        tmp = 0;
+        cudaEventElapsedTime(&tmp, start, stop);
+        exec_time+=tmp;
     }
     f(i,0,n)cout<<wt[i]<<" ";cout<<endl;
 }
@@ -128,33 +151,83 @@ void update_graph(int n, int l, int r, int w, int *v, int *ea, int *es, int *ew,
     cudaMallocManaged(&edge_idx, sizeof(int));
     *edge_idx=-1;
     int numBlocksE = (v[n] + blockSize - 1) / blockSize;
+    cudaEvent_t start, stop;
+    cudaEventCreate(&start);
+    cudaEventCreate(&stop);
+    cudaEventRecord(start);
     find_edge_index<<<numBlocksE, blockSize>>>(n, l, r, v, es, ea, edge_idx);
-    cudaDeviceSynchronize();
+    cudaEventRecord(stop);
+    cudaEventSynchronize(stop);
+    float tmp = 0;
+    cudaEventElapsedTime(&tmp, start, stop);
+    exec_time+=tmp;
     int idx=*edge_idx;
     cudaFree(edge_idx);
     //cout<<idx<<endl;
     if(idx!=-1){
         if(w!=-1)ew[idx]=w;
         else{
+            cudaEventCreate(&start);
+            cudaEventCreate(&stop);
+            cudaEventRecord(start);
             store_ea_es_and_ew<<<numBlocksE, blockSize>>>(n, idx, v, ea, es, ew, tmp_ea, tmp_es, tmp_ew);
-            cudaDeviceSynchronize();
+            cudaEventRecord(stop);
+            cudaEventSynchronize(stop);
+            tmp = 0;
+            cudaEventElapsedTime(&tmp, start, stop);
+            exec_time+=tmp;
+            cudaEventCreate(&start);
+            cudaEventCreate(&stop);
+            cudaEventRecord(start);
             update_v<<<numBlocks+1, blockSize>>>(n, l, -1, v);
-            cudaDeviceSynchronize();
+            cudaEventRecord(stop);
+            cudaEventSynchronize(stop);
+            tmp = 0;
+            cudaEventElapsedTime(&tmp, start, stop);
+            exec_time+=tmp;
+            cudaEventCreate(&start);
+            cudaEventCreate(&stop);
+            cudaEventRecord(start);
             update_ea_es_and_ew<<<numBlocksE, blockSize>>>(n, idx, 1, v, ea, es, ew, tmp_ea, tmp_es, tmp_ew);
-            cudaDeviceSynchronize();
+            cudaEventRecord(stop);
+            cudaEventSynchronize(stop);
+            tmp = 0;
+            cudaEventElapsedTime(&tmp, start, stop);
+            exec_time+=tmp;
         }
     }
     else{
         numBlocksE = v[n]/ blockSize + 1;
+        cudaEventCreate(&start);
+        cudaEventCreate(&stop);
+        cudaEventRecord(start);
         store_ea_es_and_ew<<<numBlocksE, blockSize>>>(n, v[l+1]-1, v, ea, es, ew, tmp_ea, tmp_es, tmp_ew);
-        cudaDeviceSynchronize();
+        cudaEventRecord(stop);
+        cudaEventSynchronize(stop);
+        tmp = 0;
+        cudaEventElapsedTime(&tmp, start, stop);
+        exec_time+=tmp;
         es[v[l+1]]=l;
         ea[v[l+1]]=r;
         ew[v[l+1]]=w;
+        cudaEventCreate(&start);
+        cudaEventCreate(&stop);
+        cudaEventRecord(start);
         update_v<<<numBlocks+1, blockSize>>>(n, l, 1, v);
-        cudaDeviceSynchronize();
+        cudaEventRecord(stop);
+        cudaEventSynchronize(stop);
+        tmp = 0;
+        cudaEventElapsedTime(&tmp, start, stop);
+        exec_time+=tmp;
+        cudaEventCreate(&start);
+        cudaEventCreate(&stop);
+        cudaEventRecord(start);
         update_ea_es_and_ew<<<numBlocksE, blockSize>>>(n, v[l+1], -1, v, ea, es, ew, tmp_ea, tmp_es, tmp_ew);
-        cudaDeviceSynchronize();
+        cudaEventRecord(stop);
+        cudaEventSynchronize(stop);
+        tmp = 0;
+        cudaEventElapsedTime(&tmp, start, stop);
+        exec_time+=tmp;
     }
 }
  
@@ -225,6 +298,10 @@ int main(void)
     cudaFree(tmp_ew);
     cudaFree(mask);
     cudaFree(thrd);
+    
+    ofstream out("kernel_time.txt");
+    out<<"Total kernel time : "<<exec_time<<"\n";
+    out.close();
  
     return 0;
 }
