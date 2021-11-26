@@ -299,7 +299,7 @@ int main(void)
     cudaFree(mask);
     cudaFree(thrd);
     
-    ofstream out("../kernel_perf.txt");
+    ofstream out("gpu_perf.txt");
     out<<exec_time<<"\n";
     out.close();
  

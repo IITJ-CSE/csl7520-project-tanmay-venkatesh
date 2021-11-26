@@ -22,8 +22,8 @@ inline int randint(int l, int r)
 int main()
 {
     int n, m, q, e;
-    cin>>n>>m>>q;
-    cout<<n<<" "<<m<< " "<<q<<"\n";
+    cin>>n>>m;
+    cout<<n<<" "<<m<<"\n";
     ordered_set cur;
     map<pii, int> wt;
     f(i,0,m){
