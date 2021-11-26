@@ -79,5 +79,5 @@ int main()
     auto stop = high_resolution_clock::now();
     auto duration = duration_cast<microseconds>(stop - start);
     ofstream ot("../cpu_perf.txt");
-    ot<<duration.count()/1000.0<<nl;
+    ot<<duration.count()/1000.0<<"\n";
 }
