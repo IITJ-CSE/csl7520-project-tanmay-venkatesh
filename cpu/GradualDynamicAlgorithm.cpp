@@ -3,6 +3,7 @@
 #include <bits/stdc++.h>
 #define f(i,a,b) for(int i=a;i<b;++i)
 using namespace std;
+using namespace std::chrono;
 
 const int MX=1e6;
 vector<set<int>> in;
@@ -11,6 +12,7 @@ vector<set<int>> out;
 
 int main()
 {
+    auto start = high_resolution_clock::now();
     ios_base::sync_with_stdio(false);
     cin.tie(0);
     cout.tie(0);
@@ -141,5 +143,11 @@ int main()
         }
         f(i,0,n)cout<<d[i]<<" ";
         cout<<"\n";
+            
     }
+    auto stop = high_resolution_clock::now();
+    auto duration = duration_cast<microseconds>(stop - start);
+    ofstream ot("../cpu_perf.txt");
+    ot<<duration.count()/1000.0<<"\n";
+
 }
