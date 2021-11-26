@@ -4,6 +4,11 @@
 #define f(i,a,b) for(int i=a;i<b;++i)
 using namespace std;
 
+const int MX=1e6;
+vector<set<int>> in;
+vector<set<int>> out;
+
+
 int main()
 {
     ios_base::sync_with_stdio(false);
@@ -11,20 +16,17 @@ int main()
     cout.tie(0);
     
     int n, m, u, v, w, q, x, y, e;
-    cout<<"Enter the number of vertices and edges\n";
-    cin>>n>>m;
+    cin>>n>>m>>q;
     map<pair<int, int>, int> wt;
-    set<int> in[n], out[n];
-    cout<<"Enter the edges (u -> v,  w) in the form <u, v, w> on each line. Use zero-based indices.\n";
-    f(i,0,m)cin>>u>>v>>w, wt[{u, v}]=w, in[v].insert(u), out[u].insert(v);
-    cout<<"Enter the number of queries\n";
-    cin>>q;
+    in.resize(n+3);
+    out.resize(n+3);
+    f(i,0,m)cin>>u>>v>>w, wt[{u-1, v-1}]=w, in[v-1].insert(u-1), out[u-1].insert(v-1);
     
     // Dijkshtra's algo (preprocessing)
     int p[n], d[n];
     memset(p, -1, sizeof(p));
     d[0]=0;
-    f(i,1,n)d[i]=INT_MAX;
+    f(i,1,n)d[i]=1e9;
     set<pair<int, int>> S;
     S.insert({d[0], 0});
     while(!S.empty()){
@@ -38,24 +40,28 @@ int main()
             p[z]=u;
         }
     }
+    f(i,0,n)cout<<d[i]<<" ";
+    cout<<endl;
     
     // Acting on queries
     priority_queue<pair<int, int>, vector<pair<int, int>>, std::greater<pair<int, int>> > H;
     int mark[n];
     memset(mark, 0, sizeof(mark));
     while(q--){
-        // Print statement after every query increases the complexity to O(q*n).
-        /*
-        f(i,0,n)cout<<d[i]<<" ";
-        cout<<"\n";
-        */
+        
         cin>>e>>x>>y;
+        x--;
+        y--;
         if(e)cin>>w;
         if(e&&(out[x].find(y)==out[x].end()||w<wt[{x, y}])){
             // Incremental algo
             if(out[x].find(y)==out[x].end())out[x].insert(y),in[y].insert(x);
             wt[{x, y}]=w;
-            if(d[y]<d[x]+w)continue;
+            if(d[y]<d[x]+w){
+                f(i,0,n)cout<<d[i]<<" ";
+                cout<<"\n";
+                continue;
+            }
             p[y]=x;
             d[y]=d[x]+w;
             H.push({d[y], y});
@@ -75,7 +81,11 @@ int main()
             
             if(e)wt[{x, y}]=w;
             else wt.erase({x, y}),out[x].erase(y), in[y].erase(x);
-            if(p[y]!=x)continue;
+            if(p[y]!=x){
+                f(i,0,n)cout<<d[i]<<" ";
+                cout<<"\n";
+                continue;
+            }
             
             // Mark all the vertices in T(v)
             stack<int> st;
@@ -94,13 +104,16 @@ int main()
                 u=H.top().second;
                 H.pop(); 
                 int old_val=d[u];
-                d[u]=INT_MAX;
+                d[u]=1e9;
                 p[u]=-1;
                 // find pred_min(u) 
-                int best_pred = -1, min_d = INT_MAX;
-                for(auto z:in[u])if(min_d>d[z])min_d=d[z], best_pred=z;
+                int best_pred = -1, min_d = 1e9;
+                for(auto z:in[u])if(min_d>d[z]+wt[{z,u}]){
+                    min_d=d[z]+wt[{z,u}];
+                    best_pred=z;
+                }
                 if(best_pred!=-1){
-                    if(mark[best_pred])d[u]=INT_MAX, H.push({d[u], u});
+                    if(mark[best_pred])d[u]=1e9, H.push({d[u], u});
                     else{
                         mark[u]=0;
                         d[u]=d[best_pred]+wt[{best_pred, u}];
@@ -126,10 +139,7 @@ int main()
             }
             for(auto z:Tv)mark[z]=0;
         }
+        f(i,0,n)cout<<d[i]<<" ";
+        cout<<"\n";
     }
-    
-    f(i,0,n)cout<<d[i]<<" ";
-    cout<<"\n";
-    
-    
 }
