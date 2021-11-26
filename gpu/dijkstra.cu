@@ -5,6 +5,8 @@ using namespace std;
 typedef struct edge{
     int u, v, w;
 }edge;
+
+float exec_time = 0;
  
 bool edgeComparator(edge &e1, edge &e2){
     if(e1.u==e2.u)return e1.v<e2.v;
@@ -65,8 +67,16 @@ void dijkstra(int n, int *v, int *wt, int *ea, int *ew, bool *mask, int *thrd){
     int blockSize = 256;
     int numBlocks = (n + blockSize - 1) / blockSize;
     //cout<<"s1"<<endl;
+    cudaEvent_t start, stop;
+    cudaEventCreate(&start);
+    cudaEventCreate(&stop);
+    cudaEventRecord(start);
     initialise<<<numBlocks, blockSize>>>(n, wt, mask);
-    cudaDeviceSynchronize();
+    cudaEventRecord(stop);
+    cudaEventSynchronize(stop);
+    float tmp = 0;
+    cudaEventElapsedTime(&tmp, start, stop);
+    exec_time+=tmp;
     //cout<<"s2"<<endl;
     *thrd = 0;
     //cout<<"bf"<<endl;
@@ -74,10 +84,24 @@ void dijkstra(int n, int *v, int *wt, int *ea, int *ew, bool *mask, int *thrd){
     //cout<<"bf2"<<endl;
     while(*thrd<1000000000){
         *thrd=1000000000;
+        cudaEventCreate(&start);
+        cudaEventCreate(&stop);
+        cudaEventRecord(start);
         threshold<<<numBlocks, blockSize>>>(n, v, wt, ea, ew, mask, thrd);
-        cudaDeviceSynchronize();
+        cudaEventRecord(stop);
+        cudaEventSynchronize(stop);
+        tmp = 0;
+        cudaEventElapsedTime(&tmp, start, stop);
+        exec_time+=tmp;
+        cudaEventCreate(&start);
+        cudaEventCreate(&stop);
+        cudaEventRecord(start);
         relax<<<numBlocks, blockSize>>>(n, v, wt, ea, ew, mask, thrd);
-        cudaDeviceSynchronize();
+        cudaEventRecord(stop);
+        cudaEventSynchronize(stop);
+        tmp = 0;
+        cudaEventElapsedTime(&tmp, start, stop);
+        exec_time+=tmp;
     }
     f(i,0,n)cout<<wt[i]<<" ";cout<<endl;
 }
@@ -125,6 +149,10 @@ int main(void)
     cudaFree(ew);
     cudaFree(mask);
     cudaFree(thrd);
+    
+    ofstream out("kernel_time.txt");
+    out<<"Total kernel time : "<<exec_time<<"\n";
+    out.close();
  
     return 0;
 }
