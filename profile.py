@@ -7,8 +7,8 @@ DEFAULT_ALGO = 2
 algo_names = dict([
  (1,"Static Dijkstra"),
  (2,"Dynamic Dijkstra"),
- (3,"Static Belman-Ford"),
- (4,"Dynamic Belman-Ford"),
+ (3,"Static Belman Ford"),
+ (4,"Dynamic Belman Ford"),
  (5,"Gradual Dynamic Algorithm")
 ])
 
