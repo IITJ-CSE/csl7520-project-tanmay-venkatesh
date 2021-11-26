@@ -1,9 +1,11 @@
 #include <bits/stdc++.h>
 #define f(i,a,b) for(int i=a;i<b;++i)
 using namespace std;
+using namespace std::chrono;
 
 int main()
 {
+    auto start = high_resolution_clock::now();
     ios_base::sync_with_stdio(false);
     cin.tie(0);
     cout.tie(0);
@@ -74,4 +76,8 @@ int main()
 
     f(i,0,n)cout<<d[i]<<" ";
     cout<<"\n";
+    auto stop = high_resolution_clock::now();
+    auto duration = duration_cast<microseconds>(stop - start);
+    ofstream out("../cpu_perf.txt");
+    out<<duration.count()/1000.0<<nl;
 }
