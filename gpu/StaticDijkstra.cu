@@ -150,8 +150,8 @@ int main(void)
     cudaFree(mask);
     cudaFree(thrd);
     
-    ofstream out("kernel_time.txt");
-    out<<"Total kernel time : "<<exec_time<<"\n";
+    ofstream out("../kernel_perf.txt");
+    out<<exec_time<<"\n";
     out.close();
  
     return 0;
