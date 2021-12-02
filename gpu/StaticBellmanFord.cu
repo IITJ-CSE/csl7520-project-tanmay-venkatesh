@@ -1,5 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
+using namespace std::chrono;
+
 #define f(i,a,b) for(int i=a;i<b;++i)
  
 typedef struct edge{
@@ -86,7 +88,7 @@ int main(void)
     
     int *wt, *v, *ea, *es, *ew;
     bool *mask;
- 
+    auto start = high_resolution_clock::now();
     // Allocate Unified Memory – accessible from CPU or GPU
     cudaMallocManaged(&wt, n*sizeof(int));
     cudaMallocManaged(&v, (n+1)*sizeof(int));
@@ -117,9 +119,10 @@ int main(void)
     cudaFree(ew);
     cudaFree(mask);
     
-    ofstream out("gpu_perf.txt");
-    out<<exec_time<<"\n";
-    out.close();
+    auto stop = high_resolution_clock::now();
+    auto duration = duration_cast<microseconds>(stop - start);
+    ofstream ot("gpu_perf.txt");
+    ot<<duration.count()/1000.0<<"\n";
  
     return 0;
 }

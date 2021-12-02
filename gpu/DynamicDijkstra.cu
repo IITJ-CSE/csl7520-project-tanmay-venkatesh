@@ -1,5 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
+using namespace std::chrono;
+
 #define f(i,a,b) for(int i=a;i<b;++i)
  
 typedef struct edge{
@@ -283,7 +285,7 @@ int main(void)
  
     int *wt, *v, *es, *ea, *ew, *thrd, *tmp_ea, *tmp_es, *tmp_ew;
     bool *mask;
- 
+    auto start = high_resolution_clock::now();
     // Allocate Unified Memory – accessible from CPU or GPU
     cudaMallocManaged(&wt, n*sizeof(int));
     cudaMallocManaged(&v, (n+1)*sizeof(int));
@@ -307,7 +309,7 @@ int main(void)
     /*f(i,0,n)cout<<v[i]<<" ";cout<<endl;
     f(i,0,m)cout<<ea[i]<<" ";cout<<endl;
     f(i,0,m)cout<<ew[i]<<" ";cout<<endl;*/
- 
+
     dijkstra(n, v, wt, ea, ew, mask, thrd);
     process_queries(n, q, v, wt, ea, es, ew, mask, thrd, tmp_ea, tmp_es, tmp_ew);
  
@@ -323,9 +325,13 @@ int main(void)
     cudaFree(mask);
     cudaFree(thrd);
     
-    ofstream out("gpu_perf.txt");
-    out<<exec_time<<"\n";
-    out.close();
+    // ofstream out("gpu_perf.txt");
+    // out<<exec_time<<"\n";
+    // out.close();
+    auto stop = high_resolution_clock::now();
+    auto duration = duration_cast<microseconds>(stop - start);
+    ofstream ot("gpu_perf.txt");
+    ot<<duration.count()/1000.0<<"\n";
  
     return 0;
 }

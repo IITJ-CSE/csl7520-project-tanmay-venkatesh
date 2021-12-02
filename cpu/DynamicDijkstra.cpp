@@ -5,11 +5,9 @@ using namespace std::chrono;
 
 int main()
 {
-    auto start = high_resolution_clock::now();
     ios_base::sync_with_stdio(false);
     cin.tie(0);
     cout.tie(0);
-
     int n, m, u, v, w, q, x, y, e;
     cin>>n>>m>>q;
     map<pair<int, int>, int> wt;
@@ -19,10 +17,12 @@ int main()
     // Dijkshtra's algo (preprocessing)
     int p[n], d[n];
     memset(p, -1, sizeof(p));
+    auto start = high_resolution_clock::now();
     d[0]=0;
     f(i,1,n)d[i]=1e9;
     set<pair<int, int>> S;
     S.insert({d[0], 0});
+  
     while(!S.empty()){
         u=S.begin()->second;
         w=S.begin()->first;
@@ -39,6 +39,7 @@ int main()
     priority_queue<pair<int, int>, vector<pair<int, int>>, std::greater<pair<int, int>> > H;
     int mark[n];
     memset(mark, 0, sizeof(mark));
+    
     while(q--){
 
         f(i,0,n)cout<<d[i]<<" ";
