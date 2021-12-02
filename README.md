@@ -1,9 +1,6 @@
-# csl7520-project-tanmay-venkatesh
-csl7520-project-tanmay-venkatesh created by GitHub Classroom
+# Single Source Shortest Path Algorithm for Dynamic Graphs
 
-Topic : Single Source Shortest Path Algorithm for Dynamic Graphs
-
-Algorithms implemented (both for CPU and GPU) :
+## Algorithms implemented (both for CPU and GPU) :
 
 Static graphs : Modified Dijkstra, Bellman-ford
 
