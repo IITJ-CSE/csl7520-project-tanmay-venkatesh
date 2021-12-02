@@ -10,25 +10,18 @@ Dynamic graphs : Modified Dijkstra, Gradual algorithm (https://www.researchgate.
 
 ## Performance Analysis
 ### 1. Static Dijkstra Algorithm
-![](results/1_1000.jpg)
-![](results/1_10000.jpg)
-![](results/1_50000.jpg)
-![](results/1_100000.jpg)
+![](results/1_1000.jpg) ![](results/1_10000.jpg) 
+![](results/1_50000.jpg) ![](results/1_100000.jpg)
 ### 2. Static Bellman Ford Algorithm
-![](results/3_1000.jpg)
-![](results/3_10000.jpg)
+![](results/3_1000.jpg) ![](results/3_10000.jpg)
 
 ### 3. Dynamic Dijkstra Algorithm
-![](results/2_1000.jpg)
-![](results/2_10000.jpg)
-![](results/2_50000.jpg)
-![](results/2_100000.jpg)
+![](results/2_1000.jpg) ![](results/2_10000.jpg) 
+![](results/2_50000.jpg) ![](results/2_100000.jpg)
 
 ### 4. Dynamic Gradual Algorithm
-![](results/4_1000.jpg)
-![](results/4_10000.jpg)
-![](results/4_50000.jpg)
-![](results/4_100000.jpg)
+![](results/4_1000.jpg) ![](results/4_10000.jpg) 
+![](results/4_50000.jpg) ![](results/4_100000.jpg)
 
 ## References 
 ```
