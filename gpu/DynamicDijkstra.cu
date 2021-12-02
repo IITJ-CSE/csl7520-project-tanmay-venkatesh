@@ -31,36 +31,60 @@ void initialise(int n, int *wt, bool *mask)
     }
 }
  
-__global__
-void threshold(int n, int* v, int *wt, int *ea, int *ew, bool *mask, int *thrd){
+__global__ void threshold(int n, int *v, int *wt, int *ea, int *ew, bool *mask, int *thrd)
+{
     int index = blockIdx.x * blockDim.x + threadIdx.x;
     int stride = blockDim.x * gridDim.x;
-    for (int i = index; i < n; i += stride){
-        //printf("id %d\n", i);
-        if(!mask[i]&&wt[i]<1000000000){
-            for(int j=v[i];j<v[i+1];++j)if(!mask[ea[j]]){
-                //printf("edge %d %d\n", i, ea[j]);
-                /*if(*thrd > wt[i] + ew[j]){
-                    atomicCAS(thrd, *thrd, wt[i]+ew[j]);
-                    //printf("%d %d\n", ea[j], *thrd);
-                }*/
-               atomicMin(thrd, wt[i]+ew[j]);
-            }
+    for (int i = index; i < n; i += stride)
+    {
+        if (!mask[i] && wt[i] < 1000000000)
+        {
+            for (int j = v[i]; j < v[i + 1]; ++j)
+                if (!mask[ea[j]] && *thrd > wt[i] + ew[j])
+                {
+                    atomicMin(thrd, wt[i] + ew[j]);
+                }
         }
     }
 }
- 
-__global__
-void relax(int n, int *v, int *wt, int *ea, int *ew, bool *mask, int *thrd){
+
+__global__ void relax2(int n, int *v, int *wt, int *ea, int *es, int *ew, bool *mask, int *thrd)
+{
     int index = blockIdx.x * blockDim.x + threadIdx.x;
     int stride = blockDim.x * gridDim.x;
-    for (int i = index; i < n; i += stride){
-        if(!mask[i]&&wt[i]<*thrd){
-            mask[i]=1;
-            for(int j=v[i];j<v[i+1];++j){
-                //if(wt[ea[j]] > wt[i] + ew[j])atomicCAS(&wt[ea[j]], wt[ea[j]], wt[i]+ew[j]);
-                atomicMin(&wt[ea[j]], wt[i]+ew[j]);
+    for (int i = index; i < v[n]; i += stride)
+    {
+        if (!mask[es[i]] && wt[es[i]] < *thrd)
+        {
+            //mask[es[i]]=1;
+            if (wt[ea[i]] > wt[es[i]] + ew[i])
+            {
+                atomicMin(&wt[ea[i]], wt[es[i]] + ew[i]);
             }
+        }
+    }
+    __syncthreads();
+    for (int i = index; i < v[n]; i += stride)
+    {
+        if (!mask[es[i]] && wt[es[i]] < *thrd)
+            mask[es[i]] = 1;
+    }
+}
+
+__global__ void relax(int n, int *v, int *wt, int *ea, int *ew, bool *mask, int *thrd)
+{
+    int index = blockIdx.x * blockDim.x + threadIdx.x;
+    int stride = blockDim.x * gridDim.x;
+    for (int i = index; i < n; i += stride)
+    {
+        if (!mask[i] && wt[i] < *thrd)
+        {
+            mask[i] = 1;
+            for (int j = v[i]; j < v[i + 1]; ++j)
+                if (wt[ea[j]] > wt[i] + ew[j])
+                {
+                    atomicMin(&wt[ea[j]], wt[i] + ew[j]);
+                }
         }
     }
 }
