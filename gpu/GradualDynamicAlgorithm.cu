@@ -47,7 +47,7 @@ __global__ void threshold(int n, int *v, int *wt, int *ea, int *ew, bool *mask, 
             for (int j = v[i]; j < v[i + 1]; ++j)
                 if (!mask[ea[j]] && *thrd > wt[i] + ew[j])
                 {
-                    atomicMin(thrd, wt[i] + ew[j]);
+                    atomicExch(thrd, wt[i] + ew[j]);
                 }
         }
     }
@@ -64,7 +64,7 @@ __global__ void relax2(int n, int *v, int *wt, int *ea, int *es, int *ew, bool *
             //mask[es[i]]=1;
             if (wt[ea[i]] > wt[es[i]] + ew[i])
             {
-                atomicMin(&wt[ea[i]], wt[es[i]] + ew[i]);
+                atomicExch(&wt[ea[i]], wt[es[i]] + ew[i]);
             }
         }
     }
@@ -88,7 +88,7 @@ __global__ void relax(int n, int *v, int *wt, int *ea, int *ew, bool *mask, int 
             for (int j = v[i]; j < v[i + 1]; ++j)
                 if (wt[ea[j]] > wt[i] + ew[j])
                 {
-                    atomicMin(&wt[ea[j]], wt[i] + ew[j]);
+                    atomicExch(&wt[ea[j]], wt[i] + ew[j]);
                 }
         }
     }
@@ -101,7 +101,7 @@ __global__ void find_p(int n, int *v, int *wt, int *ea, int *es, int *ew, int *p
     for (int i = index; i < v[n]; i += stride)
         if (wt[ea[i]] == wt[es[i]] + ew[i])
         {
-            atomicCAS(&p[ea[i]], p[ea[i]], es[i]);
+            atomicExch(&p[ea[i]], es[i]);
         }
 }
 
@@ -336,7 +336,7 @@ __global__ void find_min_d(int n, int u, int *v, int *wt, int *ea, int *es, int 
     for (int i = index; i < v[n]; i += stride)
         if (ea[i] == u && *min_d > wt[es[i]] + ew[i])
         {
-            atomicMin(min_d, wt[es[i]] + ew[i]);
+            atomicExch(min_d, wt[es[i]] + ew[i]);
         }
 }
 
@@ -347,7 +347,7 @@ __global__ void find_best_pred(int n, int u, int *v, int *wt, int *ea, int *es, 
     for (int i = index; i < v[n]; i += stride)
         if (ea[i] == u && *min_d == wt[es[i]] + ew[i])
         {
-            atomicCAS(best_pred, *best_pred, es[i]);
+            atomicExch(best_pred, es[i]);
         }
 }
 
