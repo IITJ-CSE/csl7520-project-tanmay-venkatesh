@@ -49,4 +49,5 @@ The CPU version of gradual dynamic algorithm is faster than than dynamic Dijkstr
 ## References 
 ```
 [1] Alshammari, Muteb & Rezgui, Abdelmounaam. (2020). A Single-Source Shortest Path Algorithm for Dynamic Graphs. AKCE International Journal of Graphs and Combinatorics. 17. 10.1016/j.akcej.2020.01.002. 
+[2] https://www.academia.edu/11928177/Parallel_Implementation_of_the_Single_Source_Shortest_Path_Algorithm_on_CPU_GPU_Based_Hybrid_System
 ```
