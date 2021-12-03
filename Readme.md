@@ -8,6 +8,25 @@ We got better performance on parallelised Dijkstra for static graphs as compared
 
 Dynamic graphs : Modified Dijkstra, Gradual algorithm (https://www.researchgate.net/publication/341712635_A_Single-Source_Shortest_Path_Algorithm_for_Dynamic_Graphs)
 
+## Compilation Instruction 
+```
+git clone https://github.com/IITJ-CSE/csl7520-project-tanmay-venkatesh.git
+cd csl7520-project-tanmay-venkatesh
+chmod a+x build.sh
+./build.sh
+```
+
+## To profile GPU vs CPU performace of a algorithm
+From the root of project repo run,
+```
+python profiler/profile.py -n <number of nodes> -m <number of edges> -q <number of changes to graph> --algo <algo-id>
+```
+You can use following command to get more help,
+```
+python profiler/profile.py --help
+```
+
+
 ## Performance Analysis
 
 The general trend we observed is, as the number of nodes and edges increases, CPU takes a lot more time in comparison to GPU.
