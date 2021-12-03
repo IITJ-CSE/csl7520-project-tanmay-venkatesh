@@ -9,6 +9,10 @@ We got better performance on parallelised Dijkstra for static graphs as compared
 Dynamic graphs : Modified Dijkstra, Gradual algorithm (https://www.researchgate.net/publication/341712635_A_Single-Source_Shortest_Path_Algorithm_for_Dynamic_Graphs)
 
 ## Performance Analysis
+
+The general trend we observed is, as the number of nodes and edges increases, CPU takes a lot more time in comparison to GPU.
+The CPU version of gradual dynamic algorithm is faster than than dynamic Dijkstra, however the parallelised GPU implementation of the same is a bit slower than that of dynamic Dijkstra. That's because a few relatively cheap computations involved in gradual algo need to happen strictly in a sequential fashion.
+
 ### 1. Static Dijkstra Algorithm
 ![](results/1_1000.jpg ) ![](results/1_10000.jpg) 
 ![](results/1_50000.jpg) ![](results/1_100000.jpg)
